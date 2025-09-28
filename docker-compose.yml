@@ -1,0 +1,165 @@
+version: '3'
+services:
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - zookeeper_data:/bitnami/zookeeper
+
+  kafka-1:
+    image: bitnami/kafka:3.5
+    container_name: kafka-1
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_1_data:/bitnami/kafka-1
+    depends_on:
+      - zookeeper
+
+  kafka-2:
+    image: bitnami/kafka:3.5
+    container_name: kafka-2
+    ports:
+      - "9093:9093"
+      - "29093:29093"
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_2_data:/bitnami/kafka-2
+    depends_on:
+      - zookeeper
+
+  kafka-3:
+    image: bitnami/kafka:3.5
+    container_name: kafka-3
+    ports:
+      - "9094:9094"
+      - "29094:29094"
+    environment:
+      - KAFKA_BROKER_ID=3
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9094
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_3_data:/bitnami/kafka-3
+    depends_on:
+      - zookeeper
+    
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.4.0
+    container_name: schema-registry
+    hostname: schema-registry
+    depends_on:
+      - kafka-1
+    ports:
+      - "8082:8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: "_schemas"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_GROUP_ID: "schema-registry"
+      SCHEMA_REGISTRY_COMPATIBILITY_LEVEL: "BACKWARD"
+    networks:
+      - default
+    restart: unless-stopped
+
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - ./init-db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./pg-init-dataset/completeddisposition.csv:/docker-entrypoint-initdb.d/completeddisposition.csv
+      - ./pg-init-dataset/completedloan.csv:/docker-entrypoint-initdb.d/completedloan.csv
+      - ./pg-init-dataset/completedtrans.csv:/docker-entrypoint-initdb.d/completedtrans.csv
+      - ./pg-init-dataset/CRMCallCenterLogs.csv:/docker-entrypoint-initdb.d/CRMCallCenterLogs.csv
+      - ./pg-init-dataset/CRMEvents.csv:/docker-entrypoint-initdb.d/CRMEvents.csv
+      - ./pg-init-dataset/CRMReviews-UTF8.csv:/docker-entrypoint-initdb.d/CRMReviews.csv
+
+
+  kafka-connect:
+    build: ./connect
+    container_name: kafka-connect
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+      CONNECT_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9093,kafka-3:9094
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      #CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      #CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      #CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      #CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - zookeeper
+    mem_limit: 4g
+    memswap_limit: 6g
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:9092,kafka-2:9093,kafka-3:9094
+    depends_on:
+      - kafka-1
+
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-snowflake:1.7.0
+    container_name: dbt_snowflake
+    volumes:
+      - ./my_dbt_project:/usr/app
+      - ./.dbt:/root/.dbt
+    working_dir: /usr/app
+    environment:
+      DBT_PROFILES_DIR: /root/.dbt
+    entrypoint: ["tail", "-f", "/dev/null"]
+
+volumes:
+  zookeeper_data:
+  kafka_1_data:
+  kafka_2_data:
+  kafka_3_data:
+  postgres_data:

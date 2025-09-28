@@ -1,0 +1,39 @@
+{
+"name": "debezium-postgres-src-unwrapped-json",
+"config": {
+"connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+"tasks.max": "1",
+
+"database.hostname": "postgres",
+"database.port": "5432",
+"database.user": "user",
+"database.password": "password",
+"database.dbname": "mydatabase",
+"database.server.name": "pg",
+"topic.prefix": "pg",
+
+"plugin.name": "pgoutput",
+"slot.name": "debezium_slot",
+"publication.autocreate.mode": "filtered",
+
+"table.include.list": "public.crmevents,public.crmcallcenterlogs,public.crmreviews,public.disposition,public.loan,public.trans",
+
+"transforms": "unwrap",
+"transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+"transforms.unwrap.drop.tombstones": "false",
+"transforms.unwrap.delete.handling.mode": "rewrite",
+"transforms.unwrap.add.fields": "op,lsn,source.ts_ms",
+
+"key.converter": "org.apache.kafka.connect.json.JsonConverter",
+"key.converter.schemas.enable": "false",
+"value.converter": "org.apache.kafka.connect.json.JsonConverter",
+"value.converter.schemas.enable": "false",
+
+"decimal.handling.mode": "precise",
+
+"heartbeat.interval.ms": "0",
+"snapshot.mode": "initial",
+"database.history.kafka.bootstrap.servers": "kafka-1:9092",
+"database.history.kafka.topic": "schema-changes.inventory"
+}
+}

@@ -1,0 +1,20 @@
+model_name: conversion_predictor
+model_type: keras
+model_version: conv-v1.0
+
+embedding_dim: 1536
+numeric_features:
+  - stars
+
+hyperparameters:
+  learning_rate: 0.001
+  dropout_rate: 0.3
+  hidden_units: [256,128]
+  batch: 256
+  epochs: 10
+
+thresholds:
+  high: 0.75
+  medium: 0.4
+
+output_labels: [low, medium, high]

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; }
+        .user { color: blue; }
+        .bot { color: green; }
+    </style>
+</head>
+<body>
+    <h2>CRM Chatbot</h2>
+    <div id="chat"></div>
+    <input type="text" id="message" placeholder="Type your message" size="50">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            const msgInput = document.getElementById("message");
+            const message = msgInput.value.trim();
+            if (!message) return;
+
+            const chatBox = document.getElementById("chat");
+            chatBox.innerHTML += `<div class='user'><b>You:</b> ${message}</div>`;
+            msgInput.value = "";
+
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+            const data = await res.json();
+
+            chatBox.innerHTML += `<div class='bot'><b>Bot:</b> ${data.answer}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

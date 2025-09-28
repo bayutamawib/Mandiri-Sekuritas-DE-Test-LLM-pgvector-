@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/narendrabayutamaw/Documents/Mandiri%20Sekuritas%20-%20DE%20Test/churn_pipeline/mlruns/749936877416713944/597061d98b52444693277502bd7dcdf2/artifacts
+end_time: 1757534932400
+entry_point_name: ''
+experiment_id: '749936877416713944'
+lifecycle_stage: active
+run_id: 597061d98b52444693277502bd7dcdf2
+run_name: train_vlatest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757534932395
+status: 4
+tags: []
+user_id: narendrabayutamaw

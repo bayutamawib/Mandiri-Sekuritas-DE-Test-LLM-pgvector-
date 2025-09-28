@@ -1,0 +1,26 @@
+{
+    "connector.class": "com.snowflake.kafka.connector.SnowflakeSinkConnector",
+    "tasks.max": "1",
+
+    "topics": "pg.public.crmevents,pg.public.crmcallcenterlogs,pg.public.crmreviews,pg.public.disposition,pg.public.loan,pg.public.trans",
+    "snowflake.topic2table.map": "pg.public.crmevents:CRMEVENTS,pg.public.crmcallcenterlogs:CRMCALLCENTERLOGS,pg.public.crmreviews:CRMREVIEWS,pg.public.disposition:DISPOSITION,pg.public.loan:LOAN,pg.public.trans:TRANS",
+    "snowflake.url.name": "https://XAOOGLO-LS04511.snowflakecomputing.com:443",
+    "snowflake.user.name": "BAYUTAMAWIB",
+    "snowflake.private.key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDHJ7vz7T1FU0oH\nWghF6tJDxFL8xTpZTB/diD/Z7gr3GXxXDUuN4s1KfE6sBkJr0pOuVFuvOYtQOAjk\nh75zriZqRWAv7tgHwVOtiJridk/nSsULyDyiTIoD5F+3PTIFWB1EdXFIF9DIXWG5\n0I2F9qvDEUDLxOQV6MQzshzlm7HaYBZFelePmTge3jFwmxNCxXOR/ewPPPZ1nsuJ\nk7OzLWgTpXMGW8ZrewRs5L4qrpBVhSjxmM5LVue0gaCJbnEEu8Et3sIl5kjnpZRI\nNpXYVAJarvGQJbDVWfBhIaCWXAOeCA2rye/vwa7Sn0lkohhvJFs7hKtf52kSr2e/\n5ebq2sL/AgMBAAECggEAQrVMf6g3ncEISu4dV04QoCJiqchmgwK8qbe5q4XQpnQi\n8gXCCQSvPwPkVjrChNtEHGClVUwxHe2nDOVrJdRviakzTtryAacAIGBhgPmgShkB\nZ7DqnnKEyEj2xqn411FsfEHacAuKI5Mj6NmyjezSG8Trr1WEENKm5aoDg+Vi7YIq\nLbnZVkjR+Cxt/V9w11sWYgxG3TeUbPswMaSf1kX3/fPBDhusXLvImEcW+9w7dvq9\n360NNHCXoWcwcBnCgx+I6VeTACgVuIT9IdMaAgBl8e6cwgusH0k1DjvIc+JvZrGb\nPXgy2lyWcSuiA7lzPjx2qGJ1UY3D5aMis3KdCDuoAQKBgQD1EFJK56PgaQupTGXX\nK2N8RJpucPqLp7bvyYiuG0zvKAJCAz4LwAAAKR0tZsQw6+Ahf5QH/sQPym4hqrL7\nFNgGsu9rrGLuIKfcxx4MT5JGk939ZLnUoTdyz5rvPAO9PTnOt/TOEORPqdQUBISb\n9CIbCClPs53ugSc5uT8aqjCnTwKBgQDQCvC8m55LwchiVg6hs/pvf7yThmTqwEoJ\ngFwrt4d9WlWVAIrC9+MSNimIhV7nxY+Dx1lV9IeB36QUna4uskqVziXdSc28K3AH\nqHagbNVrVGJSY6xBNQFp481U/soOS4XTrLO6qDNhPOvTDPMMn8Ut272H2QhLseqZ\n+/Q6Bug9UQKBgDWfMKJ7NPxxf7+3m8ENGWOjjzcDOY89T2YAbwvJpXffBT90fisM\nA/QFCwFYLy2VLyGlTLrDIBtka9yqASe3U92DYafpvGvmcVR5rTV8Y8FVsYk0dQT1\nkbBphLk8JIVP1EpLLiG4yHw16NXId0u4i43mp0NtRe1eDTswMYKgIq05AoGBALa8\ndVplonROgVGG35E/gkE/xQcb7Daasi2IVu17ZoI/v56CfF/m1sgfVPn6lDMmv/lz\nN9AdWo1EQF5vZhjUOFk/Wtj1w8V9rgi7+37MOeXtl/NgY2RfR5+YHbqDlj1aLvGP\n58qThZXqqgWWgUJccBjow6C4jOXYIAYjXhE+Ee4RAoGBAKKpx5G8fIzNekpMw7ys\ncdZPUtfZtAQjGJjOQKkUD0SZqbTWMbVJXm6lWpyAvTOHy2koRpsul+SunonnM9ve\n/zJQrXM7OH0xkDNddYYWL8FEmD3bMS24DBDZ82oNmj1fBhLC8cgsYZKZYlC5peRz\nyGnIz1nOm8uBhNBuTE+prR4q\n-----END PRIVATE KEY-----\n",
+    "auto.create": "true",
+    "auto.evolve": "true",
+    "snowflake.database.name": "SNOWFLAKE_LEARNING_DB",
+    "snowflake.schema.name": "PUBLIC_BRONZE",
+    "snowflake.role.name": "ACCOUNTADMIN",
+    "snowflake.warehouse": "SNOWFLAKE_LEARNING_WH",
+    "buffer.count.records": "10000",
+    "buffer.size.bytes": "5000000",
+    "buffer.flush.time": "60",
+
+    "key.converter": "io.confluent.connect.avro.AvroConverter",
+    "key.converter.schema.registry.url": "http://schema-registry:8081",
+    "key.converter.schemas.enable": "true",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://schema-registry:8081",
+    "value.converter.schemas.enable": "true"
+  }

@@ -1,0 +1,6 @@
+artifact_location: file:///Users/narendrabayutamaw/Documents/Mandiri%20Sekuritas%20-%20DE%20Test/churn_pipeline/mlruns/749936877416713944
+creation_time: 1757534932275
+experiment_id: '749936877416713944'
+last_update_time: 1757534932275
+lifecycle_stage: active
+name: ChurnPrediction
